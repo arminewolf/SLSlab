@@ -2,9 +2,9 @@
     "isMaster": false,
     "isSophisticated": true,
     "isFCFS": false,
-    "isExtObj": true,
-    "isLaTeX": true,
-    "isJSON": false,
+    "isExtObj": false,
+    "isLaTeX": false,
+    "isJSON": true,
     "rawMaxHorizon": 1440,
     "rawBufferTime": 4,
     "rawSecurityDistance": 250,
@@ -616,5 +616,5 @@
         ]
     ],
     "maxDelayWeight": 1000,
-    "maxWaitingTimeWeight": 10
+    "maxWaitingTimeWeight": 1
 }

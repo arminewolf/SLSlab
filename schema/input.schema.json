@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fokus.fraunhofer.de/input.schema.json",
+  "title": "Serial Lock Scheduling JSON input data schema",
+  "description": "This data structure contains the input schema for serial lock scheduling problems",
+  "$comment": "(c) Dr. Armin Wolf, Fraunhofer FOKUS, Berlin, Germany, 2025, all rights reserved",
+  "type": "object",
+  "properties": {
+    "isMaster": {
+      "type": "boolean",
+      "description": "the flag signals whether the (partial) master problem of an LBBD (or the (whole) monolithic problem) will be solved",
+      "$comment": "ONLY FOR INTERNAL USAGE"
+    },
+    "isSophisticated": {
+      "type": "boolean",
+      "description": "the flag signals whether additional necessary placement conditions will be considered (or not)",
+      "$comment": "ONLY FOR INTERNAL USAGE"
+    },
+    "isFCFS": {
+      "type": "boolean",
+      "description": "the flag signals whether the first-come-first-served principle has to be respected (or not)",
+      "$comment": "NOT USED"
+    },
+    "isExtObj": {
+      "type": "boolean",
+      "description": "the flag signals whether the number of lockings will be considered in the objective",
+      "$comment": "NOT USED"
+    },
+    "isLaTeX": {
+      "type": "boolean",
+      "description": "the flag signals whether LaTeX output should be generated.",
+      "$comment": "ONLY FOR INTERNAL USAGE"
+    },
+    "isJSON": {
+      "type": "boolean",
+      "description": "the flag signals whether JSON output should be generated.",
+      "$comment": "ONLY FOR INTERNAL USAGE"
+    },
+    "rawMaxHorizon": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "the maximal scheduling horizon in [min].",
+      "$comment": "small values may result in inconsistencies, big values may be replaced by worst-case estimations."
+    },
+    "rawBufferTime": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "the (security) buffer time in [min.] between ships during entering / leaving the lock chambers [min].",
+      "$comment": "in future versions there might be lock-specific buffer times"
+    },
+    "rawSecurityDistance": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "the security distance in front of the ships in lock chambers in [cm]:"
+    },
+    "locations": {
+      "description": "the two unique identifiers (names) of the locations at the start and the end of the considered part of the canal",
+      "$ref": "commons.schema.json#/definitions/Enumeration"
+    },
+    "segments": {
+      "description": "the unique identifiers (names) of the segments before, between and after the locks in the considered part of the canal",
+      "$ref": "commons.schema.json#/definitions/Enumeration"
+    },
+    "rawLeftPositions": {
+      "description": "for each canal segment the 'left' (west / 'upward') position in [m] where the segment starts",
+      "$ref": "commons.schema.json#/definitions/IntArray1D"
+    },
+    "rawRightPositions": {
+      "description": "for each canal segment the 'right' (east / 'downward') position in [m] where the segment ends",
+      "$ref": "commons.schema.json#/definitions/IntArray1D"
+    },
+    "locks": {
+      "description": "the unique identifiers (names) of the locks between the canal segments in the considered part of the canal",
+      "$ref": "commons.schema.json#/definitions/Enumeration"
+    },
+    "maxNumOfLockings": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "the maximal number of lockings per lock.",
+      "$comment": "small values may result in sub-optimal solutions or inconsistencies, big values may be replaced by worst-case estimations."
+    },
+    "rawLengthsOfChambers": {
+      "description": "for each lock the (usable) lengths in [m] of its two chambers.",
+      "$comment": "the number of chambers is restricted to 2 - zero length means that the chamber is not available.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "rawWidthsOfChambers": {
+      "description": "for each lock the (usable) widths in [m] of its two chambers.",
+      "$comment": "the number of chambers is restricted to 2 - zero width means that the chamber is not available.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "volumeFactorsOfChambers": {
+      "description": "for each lock the volume factors used in optimization, e.g. 1 and 2 if one chamber is twice as large as the other.",
+      "$comment": "the number of chambers is restricted to 2 - the factors must only roughly reflect the chamber proportions.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "rawTimesForFilling": {
+      "description": "for each lock the durations in [min.]  for filling its two chambers during 'upward' locking.",
+      "$comment": "the number of chambers is restricted to 2 - the durations contain time for closing and opening the lock chamber gates.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "rawTimesForEmptying": {
+      "description": "for each lock the durations in [min.] for emptying its two chambers during 'downward' locking.",
+      "$comment": "the number of chambers is restricted to 2 - the durations contain time for closing and opening the lock chamber gates.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "initialLockingIds": {
+      "description": "for each lock the 'initial' locking ids (0 or 1) of its two chambers reflecting the sides for entering a the beginning of the scheduling horizon.",
+      "$comment": "the number of chambers is restricted to 2 - by convention: even ids reflect 'downward' locking and odd ids 'upward' locking.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "rawInitialLockingStarts": {
+      "description": "for each lock the 'initial' earliest times in [min] of its two chambers.",
+      "$comment": "the number of chambers is restricted to 2 - these initial times reflect the earliest time for entering the lock chamber from the 'initial' side.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "ships": {
+      "description": "the unique identifiers (names) of the ships to be planned and scheduled through the segments and locks in the considered part of the canal.",
+      "$ref": "commons.schema.json#/definitions/Enumeration"
+    },
+    "directions": {
+      "description": "for each ship the indicator that indicates its direction: 1 = 'downward' (west-to-east), -1 = 'upward' (east-to-west).",
+      "$ref": "commons.schema.json#/definitions/IntArray1D"
+    },
+    "rawLengthsOfShips": {
+      "description": "for each ship its length in [cm] 'over-all'.",
+      "$comment": "used while placing the ships into their allocated lock chambers.",
+      "$ref": "commons.schema.json#/definitions/IntArray1D"
+    },
+    "rawWidthsOfShips": {
+      "description": "for each ship its width in [cm] 'over-all'.",
+      "$comment": "used while placing the ships into their allocated lock chambers.",
+      "$ref": "commons.schema.json#/definitions/IntArray1D"
+    },
+    "rawDurationsForEntering": {
+      "description": "for each ship and for each lock the durations in [min.] for entering the lock chambers.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "rawDurationsForLeaving": {
+      "description": "for each ship and for each lock the durations in [min.] for leaving the lock chambers.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "rawEtas": {
+      "description": "for each ship the Earliest Times of Arrival at the corresponding sides (west/east) of the considered part of the canal.",
+      "$ref": "commons.schema.json#/definitions/IntArray1D"
+    },
+    "rawMinDurs": {
+      "description": "for each ship and for each canal segment the minimal transit times in [min.].",
+      "$comment": "the minimal transit times implicitly define the maximal speeds.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "rawMaxDurs": {
+      "description": "for each ship and for each canal segment the maximal transit times in [min.].",
+      "$comment": "the maximal transit times implicitly define the minimal speeds.",
+      "$ref": "commons.schema.json#/definitions/IntArray2D"
+    },
+    "maxDelayWeight": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "the weight of the longest delay of any ship w.r.t. to its ideal transit time within the objective to be minimized.",
+      "$comment": "the objective function is a weighted sum of objectives: longest delay, longest waiting time and water usage."
+    },
+    "maxWaitingTimeWeight": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "the weight of the longest waiting time of any ship before the locks within the objective to be minimized.",
+      "$comment": "if the transit durations within the segments offer enough flexibility the optimum 0 [min]. waiting time will be reached."
+    }
+  },
+  "required": [
+    "rawMaxHorizon",
+    "rawBufferTime",
+    "rawSecurityDistance",
+    "locations",
+    "segments",
+    "rawLeftPositions",
+    "rawRightPositions",
+    "locks",
+    "maxNumOfLockings",
+    "rawLengthsOfChambers",
+    "rawWidthsOfChambers",
+    "volumeFactorsOfChambers",
+    "rawTimesForFilling",
+    "rawTimesForEmptying",
+    "initialLockingIds",
+    "rawInitialLockingStarts",
+    "ships",
+    "directions",
+    "rawLengthsOfShips",
+    "rawWidthsOfShips",
+    "rawDurationsForEntering",
+    "rawDurationsForLeaving",
+    "rawEtas",
+    "rawMinDurs",
+    "rawMaxDurs",
+    "maxDelayWeight",
+    "maxWaitingTimeWeight"
+  ]
+}

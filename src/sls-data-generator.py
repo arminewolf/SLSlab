@@ -247,9 +247,9 @@ def generate_instance(cfg: Config) -> Dict[str, Any]:
         "isMaster": False,
         "isSophisticated": True,
         "isFCFS": False,
-        "isExtObj": True,
-        "isLaTeX": True,
-        "isJSON": False,
+        "isExtObj": False,
+        "isLaTeX": False,
+        "isJSON": True,
         "rawMaxHorizon": int(horizon),
         "rawBufferTime": int(cfg.buffer_time_min),
         "rawSecurityDistance": int(cfg.security_distance_cm),
@@ -274,7 +274,7 @@ def generate_instance(cfg: Config) -> Dict[str, Any]:
         "rawMinDurs": raw_min_durs,
         "rawMaxDurs": raw_max_durs,
         "maxDelayWeight": 1000,
-        "maxWaitingTimeWeight": 10,
+        "maxWaitingTimeWeight": 1,
     }
     return instance
 

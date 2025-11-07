@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fokus.fraunhofer.de/commons.schema.json",
+  "title": "QCMobility - Maritimer Verkehr - JSON commons",
+  "description": "This data structure contains the commons for maritime traffic planning and lock scheduling",
+  "$comment": "(c) Dr. Armin Wolf, Fraunhofer FOKUS, Berlin, Germany, 2025, all rights reserved",
+  "definitions": {
+    "Enumeration": {
+      "description": "MiniZinc enumerations",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "e": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "IntArray1D": {
+      "description": "a 1-dimensional non-empty array containing integer values",
+      "type": "array",
+      "items": {
+        "description": "each entry is an integer value",
+        "type": "integer"
+      },
+      "minItems": 1
+    },
+    "IntArray2D": {
+      "description": "a 2-dimensional non-empty integer array containing non-empty entries",
+      "type": "array",
+      "items": {
+        "description": "each entry of the 'outer' 2d-array is an non-empty integer 1d-array",
+        "type": "array",
+        "items": {
+          "type": "integer"
+        },
+        "minItems": 1
+      },
+      "minItems": 1
+    },
+    "IntArray3D": {
+      "description": "a 3-dimensional non-empty integer array containing non-empty entries",
+      "type": "array",
+      "items": {
+        "description": "each entry of the 'outer' 3d-array is an non-empty integer 2d-array",
+        "type": "array",
+        "items": {
+          "description": "each entry of the 'outer' 2d-array is an non-empty integer 1d-array",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1
+        },
+        "minItems": 1
+      },
+      "minItems": 1
+    },
+    "IntArray4D": {
+      "description": "a 4-dimensional non-empty integer array containing non-empty entries",
+      "type": "array",
+      "items": {
+        "description": "each entry of the 'outer' 4d-array is an non-empty integer 3d-array",
+        "type": "array",
+        "items": {
+          "description": "each entry of the 'outer' 3d-array is an non-empty integer 2d-array",
+          "type": "array",
+          "items": {
+            "description": "each entry of the 'outer' 2d-array is an non-empty integer 1d-array",
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1
+          },
+          "minItems": 1
+        },
+        "minItems": 1
+      },
+      "minItems": 1
+    }
+  }
+}
