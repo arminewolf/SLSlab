@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SLSLab"
+description = "Data generator for serial lock scheduling data."
+version = "0.0.1"
+requires-python = ">=3.12"
+dependencies = []
+readme = "README.md"
+
+[tool.mypy]
+namespace_packages = true
+mypy_path = "src"
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 150
+target-version = ["py312"]
+
+[tool.flake8]
+max-line-length = 150
+extend-ignore = ["F541"]
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+]
+
+[tool.uv]
+config-settings = { editable_mode = "compat" }
