@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fokus.fraunhofer.de/commons.schema.json",
-  "title": "QCMobility - Maritimer Verkehr - JSON commons",
+  "title": "maritime traffic planning - JSON commons",
   "description": "This data structure contains the commons for maritime traffic planning and lock scheduling",
   "$comment": "(c) Dr. Armin Wolf, Fraunhofer FOKUS, Berlin, Germany, 2025, all rights reserved",
   "definitions": {
