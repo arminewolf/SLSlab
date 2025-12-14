@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 
 
@@ -6,6 +6,45 @@ ROOT_DIR = Path(__file__).parents[2]
 DATA_DIR = ROOT_DIR / "data"
 GENERATED_DIR = DATA_DIR / "generated"
 
+
+_CAMEL_MAP = {
+    "is_master": "isMaster",
+    "is_sophisticated": "isSophisticated",
+    "is_fcfs": "isFCFS",
+    "is_extobj": "isExtObj",
+    "is_latex": "isLaTeX",
+    "is_json": "isJSON",
+    "raw_max_horizon": "rawMaxHorizon",
+    "raw_buffer_time": "rawBufferTime",
+    "raw_security_distance": "rawSecurityDistance",
+    "locations": "locations",
+    "segments": "segments",
+    "raw_left_positions": "rawLeftPositions",
+    "raw_right_positions": "rawRightPositions",
+    "locks": "locks",
+    "num_of_chambers": "numOfChambers",
+    "max_num_of_lockings": "maxNumOfLockings",
+    "raw_lengths_of_chambers": "rawLengthsOfChambers",
+    "raw_widths_of_chambers": "rawWidthsOfChambers",
+    "raw_times_for_filling": "rawTimesForFilling",
+    "raw_times_for_emptying": "rawTimesForEmptying",
+    "ships": "ships",
+    "directions": "directions",
+    "raw_lengths_of_ships": "rawLengthsOfShips",
+    "raw_widths_of_ships": "rawWidthsOfShips",
+    "raw_durations_for_entering": "rawDurationsForEntering",
+    "raw_durations_for_leaving": "rawDurationsForLeaving",
+    "raw_etas": "rawEtas",
+    "eta_range": "etaRange",
+    "raw_min_durs": "rawMinDurs",
+    "raw_max_durs": "rawMaxDurs",
+    "max_delay_weight": "maxDelayWeight",
+    "max_waiting_time_weight": "maxWaitingTimeWeight",
+    "ship_distribution_range": "shipDistributionRange",
+    "ship_length_cm_range": "shipLengthCMRange",
+    "ship_width_cm_range": "shipWidthCMRange",
+    "seed": "seed",
+}
 
 @dataclass(slots=True, frozen=True)
 class InputConfig:
@@ -97,3 +136,10 @@ class OutputConfig:
     ship_length_cm_range: tuple[int, int]
     ship_width_cm_range: tuple[int, int]
     seed: int
+
+    def to_instance(self) -> dict[str, object]:
+        data = asdict(self)
+        return {
+            _CAMEL_MAP[k]: v
+            for k, v in data.items()
+        }

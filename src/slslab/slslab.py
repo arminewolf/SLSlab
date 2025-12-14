@@ -9,25 +9,28 @@ class InstanceGenerator:
         self.input_config = input_config
         self.output_config = self.generate_output_config()
 
-    def _enum(self, items: list[str]) -> list[dict[str, str]]:
+    @staticmethod
+    def _enum(items: list[str]) -> list[dict[str, str]]:
         return [{"e": s} for s in items]
 
-    def _sample_range(self, rng: tuple[int, int]) -> int:
+    @staticmethod
+    def _sample_range(rng: tuple[int, int]) -> int:
         lo, hi = rng
         return random.randint(lo, hi)
 
-    def _index_range(self, rng: tuple[int, int], num: int) -> int:
+    @staticmethod
+    def _index_range(rng: tuple[int, int], num: int) -> int:
         lh, rh = rng
         return int(round((lh * num) / (lh + rh)))
 
-    def _factor_range(self, rng: tuple[int, int]) -> float:
+    @staticmethod
+    def _factor_range(rng: tuple[int, int]) -> float:
         lo, hi = rng
         return lo + (hi - lo) * (1.0 - random.random())
 
     # Enter/leave times per ship per lock (simple size-based heuristic)
-    def _enter_leave_time(
-        self, length_cm: int, width_cm: int
-    ) -> tuple[int, int]:
+    @staticmethod
+    def _enter_leave_time(length_cm: int, width_cm: int) -> tuple[int, int]:
         base = 2
         add_len = max(0, length_cm // 4000)  # +1 per ~40m
         add_w = max(0, width_cm // 800)  # +1 per ~8m
@@ -268,46 +271,6 @@ class InstanceGenerator:
             ship_width_cm_range=self.input_config.ship_width_cm_range,
             seed=self.input_config.seed,
         )
-
+    
     def return_instance(self) -> dict[str, Any]:
-        # Assemble instance
-        instance = {
-            "isMaster": self.output_config.is_master,
-            "isSophisticated": self.output_config.is_sophisticated,
-            "isFCFS": self.output_config.is_fcfs,
-            "isExtObj": self.output_config.is_extobj,
-            "isLaTeX": self.output_config.is_latex,
-            "isJSON": self.output_config.is_json,
-            "rawMaxHorizon": self.output_config.raw_max_horizon,
-            "rawBufferTime": self.output_config.raw_buffer_time,
-            "rawSecurityDistance": self.output_config.raw_security_distance,
-            "locations": self.output_config.locations,
-            "segments": self.output_config.segments,
-            "rawLeftPositions": self.output_config.raw_left_positions,
-            "rawRightPositions": self.output_config.raw_right_positions,
-            "locks": self.output_config.locks,
-            "numOfChambers": self.output_config.num_of_chambers,
-            "maxNumOfLockings": self.output_config.max_num_of_lockings,
-            "rawLengthsOfChambers": self.output_config.raw_lengths_of_chambers,
-            "rawWidthsOfChambers": self.output_config.raw_widths_of_chambers,
-            "rawTimesForFilling": self.output_config.raw_times_for_filling,
-            "rawTimesForEmptying": self.output_config.raw_times_for_emptying,
-            "ships": self.output_config.ships,
-            "directions": self.output_config.directions,
-            "rawLengthsOfShips": self.output_config.raw_lengths_of_ships,
-            "rawWidthsOfShips": self.output_config.raw_widths_of_ships,
-            "rawDurationsForEntering": self.output_config.raw_durations_for_entering,
-            "rawDurationsForLeaving": self.output_config.raw_durations_for_leaving,
-            "rawEtas": self.output_config.raw_etas,
-            "etaRange": self.output_config.eta_range,
-            "rawMinDurs": self.output_config.raw_min_durs,
-            "rawMaxDurs": self.output_config.raw_max_durs,
-            "maxDelayWeight": self.output_config.max_delay_weight,
-            "maxWaitingTimeWeight": self.output_config.max_waiting_time_weight,
-            "shipDistributionRange": self.output_config.ship_distribution_range,
-            "shipLengthCMRange": self.output_config.ship_length_cm_range,
-            "shipWidthCMRange": self.output_config.ship_width_cm_range,
-            "seed": self.output_config.seed,
-        }
-        return instance
-
+        return self.output_config.to_instance()
