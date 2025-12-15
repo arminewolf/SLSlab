@@ -88,10 +88,7 @@ class InputConfig:
     # Misc
     buffer_time_min: int = 3
     security_distance_cm: int = 200
-    eta_range: tuple[int, int] = (
-        5,
-        10,
-    )  # now the range is the INTERVAL range of the ships entering from the same side
+    eta_range: tuple[int, int] = (5, 10)  # now the range is the INTERVAL range of the ships entering from the same side
     delay_weight: int = 1000
     wait_weight: int = 10
     seed: int = 42

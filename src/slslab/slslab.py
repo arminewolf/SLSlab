@@ -62,13 +62,10 @@ class InstanceGenerator:
         fills_all, empties_all = [], []
 
         for _ in range(cfg.n_locks):
-            lengths, widths, fills, empties = [], [], [], []
-
-            for _ in range(cfg.chambers_per_lock):
-                lengths.append(self._sample_range(cfg.chamber_length_cm_range))
-                widths.append(self._sample_range(cfg.chamber_width_cm_range))
-                fills.append(self._sample_range(cfg.fill_time_range))
-                empties.append(self._sample_range(cfg.empty_time_range))
+            lengths = [self._sample_range(cfg.chamber_length_cm_range) for _ in range(cfg.chambers_per_lock)]
+            widths = [self._sample_range(cfg.chamber_width_cm_range) for _ in range(cfg.chambers_per_lock)]
+            fills = [self._sample_range(cfg.fill_time_range) for _ in range(cfg.chambers_per_lock)]
+            empties = [self._sample_range(cfg.empty_time_range) for _ in range(cfg.chambers_per_lock)]
 
             lengths_all.append(lengths)
             widths_all.append(widths)
