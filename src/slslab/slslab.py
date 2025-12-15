@@ -1,7 +1,16 @@
 import random
 from typing import Any
+from dataclasses import dataclass
 
 from .configs import InputConfig, OutputConfig
+
+@dataclass(slots=True)
+class Chambers:
+    lock_lengths: list[int]
+    lengths: list[list[int]]
+    widths: list[list[int]]
+    fill_times: list[list[int]]
+    empty_times: list[list[int]]
 
 
 class InstanceGenerator:
@@ -36,12 +45,155 @@ class InstanceGenerator:
         add_w = max(0, width_cm // 800)  # +1 per ~8m
         return base + add_len + add_w, base + add_len
 
+    def return_instance(self) -> dict[str, Any]:
+        return self.output_config.to_instance()
+    
+    def _create_ship_length_cm_range(self):
+        return [self._sample_range(self.input_config.ship_length_cm_range) for _ in range(self.input_config.ship_count)]
+
+    def _create_ship_width_cm_range(self):
+        return [self._sample_range(self.input_config.ship_width_cm_range) for _ in range(self.input_config.ship_count)]
+
+    def _generate_chambers(self) -> Chambers:
+        cfg = self.input_config
+
+        lock_lengths = []
+        lengths_all, widths_all = [], []
+        fills_all, empties_all = [], []
+
+        for _ in range(cfg.n_locks):
+            lengths, widths, fills, empties = [], [], [], []
+
+            for _ in range(cfg.chambers_per_lock):
+                lengths.append(self._sample_range(cfg.chamber_length_cm_range))
+                widths.append(self._sample_range(cfg.chamber_width_cm_range))
+                fills.append(self._sample_range(cfg.fill_time_range))
+                empties.append(self._sample_range(cfg.empty_time_range))
+
+            lengths_all.append(lengths)
+            widths_all.append(widths)
+            fills_all.append(fills)
+            empties_all.append(empties)
+            lock_lengths.append(max(lengths))
+
+        lock_lengths.append(0)
+
+        return Chambers(
+            lock_lengths=lock_lengths,
+            lengths=lengths_all,
+            widths=widths_all,
+            fill_times=fills_all,
+            empty_times=empties_all,
+        )
+    
+    def _scale_chambers_for_ships(self, chambers: Chambers, ship_lengths: list[int], ship_widths: list[int]) -> None:
+        cfg = self.input_config
+
+        for li in range(cfg.n_locks):
+            for ch in range(cfg.chambers_per_lock):
+                for s in range(cfg.ship_count):
+                    required_len = ship_lengths[s] + cfg.security_distance_cm
+                    if required_len > chambers.lengths[li][ch]:
+                        chambers.lengths[li][ch] = required_len
+                        chambers.lock_lengths[li] = max(
+                            chambers.lock_lengths[li],
+                            required_len,
+                        )
+
+                    if ship_widths[s] > chambers.widths[li][ch]:
+                        chambers.widths[li][ch] = ship_widths[s]
+
+    def _generate_segments(self, lock_lengths: list[int]) -> tuple[list[int], list[int]]:
+        cfg = self.input_config
+        left, right = [], []
+        pos = 0
+
+        for p in range(cfg.n_locks + 1):
+            seg_len = self._sample_range(cfg.segment_length_m_range)
+            left.append(pos)
+            right.append(pos + seg_len)
+            pos += seg_len + int(round(lock_lengths[p] / 100))
+
+        return left, right
+    
+    def _generate_directions(self) -> list[int]:
+        cfg = self.input_config
+        split = self._index_range(cfg.ship_distribution_range, cfg.ship_count)
+        return [1 if i < split else -1 for i in range(cfg.ship_count)]
+
+    def _generate_etas(self) -> list[int]:
+        cfg = self.input_config
+        split = self._index_range(cfg.ship_distribution_range, cfg.ship_count)
+
+        etas = []
+        lh = rh = 0
+
+        for i in range(cfg.ship_count):
+            if i < split:
+                etas.append(lh)
+                lh += self._sample_range(cfg.eta_range)
+            else:
+                etas.append(rh)
+                rh += self._sample_range(cfg.eta_range)
+
+        return etas
+    
+    def _generate_enter_leave_durations(self, ship_lengths: list[int], ship_widths: list[int]) -> tuple[list[list[int]], list[list[int]]]:
+        cfg = self.input_config
+        entering, leaving = [], []
+        for s in range(cfg.ship_count):
+            e_base, l_base = self._enter_leave_time(ship_lengths[s], ship_widths[s])
+            entering.append([e_base + random.randint(0, 1) for _ in range(cfg.n_locks)])
+            leaving.append([l_base + random.randint(0, 1) for _ in range(cfg.n_locks)])
+
+        return entering, leaving
+
+    def _generate_segment_durations(self, left_positions: list[int], right_positions: list[int], directions: list[int]) -> tuple[list[list[int]], list[list[int]]]:
+        cfg = self.input_config
+        n_segments = cfg.n_locks + 1
+
+        min_durs, max_durs = [], []
+
+        for s in range(cfg.ship_count):
+            min_row, max_row = [], []
+
+            speed_range = (cfg.speed_up_range if directions[s] == 1 else cfg.speed_down_range)
+
+            for p in range(n_segments):
+                length_m = right_positions[p] - left_positions[p]
+                t_min = int(round(60.0 * length_m / (1000.0 * self._factor_range(speed_range))))
+                min_row.append(t_min)
+                max_row.append(cfg.duration_factor * t_min)
+
+            min_durs.append(min_row)
+            max_durs.append(max_row)
+
+        return min_durs, max_durs
+    
+    def _compute_horizon(self, raw_max_durs: list[list[int]], chambers: Chambers, raw_durs_entering: list[list[int]], raw_durs_leaving: list[list[int]]) -> int:
+        cfg = self.input_config
+
+        longest_route_max = max((sum(row) for row in raw_max_durs), default=0)
+        max_fill = max((max(row) for row in chambers.fill_times), default=0)
+        max_empty = max((max(row) for row in chambers.empty_times), default=0)
+        max_enter = max((max(row) for row in raw_durs_entering), default=0)
+        max_leave = max((max(row) for row in raw_durs_leaving), default=0)
+
+        per_lock_overhead = (
+            max_fill
+            + max_empty
+            + max_enter
+            + max_leave
+            + 2 * cfg.buffer_time_min
+        )
+        # return max(raw_etas) + longest_route_max + cfg.n_locks * per_lock_overhead + 120
+        # Keep your fixed horizon for now
+        return 1440
+    
     def generate_output_config(self) -> OutputConfig:
         assert self.input_config.n_locks >= 1, "Need at least one lock"
         assert self.input_config.ship_count >= 1, "Need at least one ship"
-        assert (
-            self.input_config.chambers_per_lock >= 1
-        ), "Need at least one chamber"
+        assert self.input_config.chambers_per_lock >= 1, "Need at least one chamber"
 
         n_segments = self.input_config.n_locks + 1
 
@@ -51,188 +203,38 @@ class InstanceGenerator:
         locations = ["S", "T"]
         locks_names = [f"LOCK-{i+1}" for i in range(self.input_config.n_locks)]
         segments_names = [f"SEG-{i+1}" for i in range(n_segments)]
-        ships_names = [
-            f"SHIP-{i+1}" for i in range(self.input_config.ship_count)
-        ]
+        ships_names = [f"SHIP-{i+1}" for i in range(self.input_config.ship_count)]
 
         # Ship sizes (cm)
-        ship_lengths_cm = [
-            self._sample_range(self.input_config.ship_length_cm_range)
-            for _ in range(self.input_config.ship_count)
-        ]
-        ship_widths_cm = [
-            self._sample_range(self.input_config.ship_width_cm_range)
-            for _ in range(self.input_config.ship_count)
-        ]
+        ship_lengths_cm = self._create_ship_length_cm_range()
+        ship_widths_cm = self._create_ship_width_cm_range()
 
         # Chambers per lock (cm);
-        lock_lengths = []
-        raw_lengths_of_chambers, raw_widths_of_chambers = [], []
-        raw_times_for_filling, raw_times_for_emptying = [], []
-        for _ in range(self.input_config.n_locks):
-            max_length = 0
-            lengths, widths = [], []
-            fillings, emptyings = [], []
-            for _ in range(self.input_config.chambers_per_lock):
-                c_len = self._sample_range(
-                    self.input_config.chamber_length_cm_range
-                )
-                c_w = self._sample_range(
-                    self.input_config.chamber_width_cm_range
-                )
-                f = self._sample_range(self.input_config.fill_time_range)
-                e = self._sample_range(self.input_config.empty_time_range)
-                lengths.append(c_len)
-                widths.append(c_w)
-                fillings.append(f)
-                emptyings.append(e)
-                if c_len > max_length:
-                    max_length = c_len
-            raw_lengths_of_chambers.append(lengths)
-            raw_widths_of_chambers.append(widths)
-            raw_times_for_filling.append(fillings)
-            raw_times_for_emptying.append(emptyings)
-            lock_lengths.append(max_length)
-        lock_lengths.append(0)
+        chambers = self._generate_chambers()
 
         # Ensure each ship fits in at least one chamber of each lock (scale chamber 1 if needed)
         if self.input_config.auto_scale_chambers:
-            for li in range(self.input_config.n_locks):
-                for ch in range(self.input_config.chambers_per_lock):
-                    usable_len_cm = raw_lengths_of_chambers[li][ch]
-                    usable_w_cm = raw_widths_of_chambers[li][ch]
-                    for s in range(self.input_config.ship_count):
-                        if (
-                            ship_lengths_cm[s]
-                            + self.input_config.security_distance_cm
-                            > usable_len_cm
-                        ):
-                            raw_lengths_of_chambers[li][ch] = (
-                                ship_lengths_cm[s]
-                                + self.input_config.security_distance_cm
-                            )
-                            usable_len_cm = raw_lengths_of_chambers[li][ch]
-                            if (
-                                lock_lengths[li]
-                                < raw_lengths_of_chambers[li][ch]
-                            ):
-                                lock_lengths[li] = raw_lengths_of_chambers[li][
-                                    ch
-                                ]
-                        if ship_widths_cm[s] > usable_w_cm:
-                            raw_widths_of_chambers[li][ch] = ship_widths_cm[s]
-                            usable_w_cm = raw_widths_of_chambers[li][ch]
+            self._scale_chambers_for_ships(chambers, ship_lengths_cm, ship_widths_cm)
 
         # Segment positions (contiguous)
-        left_positions, right_positions = [], []
-        pos = 0
-        for p in range(n_segments):
-            seg_len = self._sample_range(
-                self.input_config.segment_length_m_range
-            )
-            left_positions.append(pos)
-            right_positions.append(pos + seg_len)
-            pos += seg_len + int(round(lock_lengths[p] / 100, 0))
+        left_positions, right_positions = self._generate_segments(chambers.lock_lengths)
 
         # Directions alternate: 1 (down) / -1 (up)
-        directions = [
-            (
-                1
-                if i
-                < self._index_range(
-                    self.input_config.ship_distribution_range,
-                    self.input_config.ship_count,
-                )
-                else -1
-            )
-            for i in range(self.input_config.ship_count)
-        ]
+        directions = self._generate_directions()
 
         # ETAs
-        raw_etas = []
-        lh = 0
-        rh = 0
-        for s in range(self.input_config.ship_count):
-            if s < self._index_range(
-                self.input_config.ship_distribution_range,
-                self.input_config.ship_count,
-            ):
-                raw_etas.append(lh)
-                lh = lh + self._sample_range(self.input_config.eta_range)
-            else:
-                raw_etas.append(rh)
-                rh = rh + self._sample_range(self.input_config.eta_range)
+        raw_etas = self._generate_etas()
 
-        raw_durs_entering, raw_durs_leaving = [], []
-        for s in range(self.input_config.ship_count):
-            e_row, l_row = [], []
-            e_base, l_base = self._enter_leave_time(
-                ship_lengths_cm[s], ship_widths_cm[s]
-            )
-            for _ in range(self.input_config.n_locks):
-                e_row.append(e_base + random.randint(0, 1))
-                l_row.append(l_base + random.randint(0, 1))
-            raw_durs_entering.append(e_row)
-            raw_durs_leaving.append(l_row)
+        # Enter/leave durations per ship per lock
+        raw_durs_entering, raw_durs_leaving = self._generate_enter_leave_durations(ship_lengths_cm, ship_widths_cm)
 
         # Segment transit durations per ship (tmin/tmax ranges)
-        raw_min_durs, raw_max_durs = [], []
-        for s in range(self.input_config.ship_count):
-            min_row, max_row = [], []
-            for p in range(n_segments):
-                if directions[s] == 1:
-                    t_min = int(
-                        round(
-                            60.0
-                            * (right_positions[p] - left_positions[p])
-                            / (
-                                1000.0
-                                * self._factor_range(
-                                    self.input_config.speed_up_range
-                                )
-                            ),
-                            0,
-                        )
-                    )
-                else:  # directions[s] == -1:
-                    t_min = int(
-                        round(
-                            60.0
-                            * (right_positions[p] - left_positions[p])
-                            / (
-                                1000.0
-                                * self._factor_range(
-                                    self.input_config.speed_down_range
-                                )
-                            ),
-                            0,
-                        )
-                    )
-                t_max = self.input_config.duration_factor * t_min
-                min_row.append(t_min)
-                max_row.append(t_max)
-            raw_min_durs.append(min_row)
-            raw_max_durs.append(max_row)
+        raw_min_durs, raw_max_durs = self._generate_segment_durations(left_positions, right_positions, directions)  
 
         # Horizon (rough but safe)
-        longest_route_max = max((sum(row) for row in raw_max_durs), default=0)
-        max_fill = max((max(row) for row in raw_times_for_filling), default=0)
-        max_empty = max(
-            (max(row) for row in raw_times_for_emptying), default=0
-        )
-        max_enter = max((max(row) for row in raw_durs_entering), default=0)
-        max_leave = max((max(row) for row in raw_durs_leaving), default=0)
-        per_lock_overhead = (
-            max_fill
-            + max_empty
-            + max_enter
-            + max_leave
-            + 2 * self.input_config.buffer_time_min
-        )
-        # horizon = max(raw_etas) + longest_route_max + cfg.n_locks * per_lock_overhead + 120
-        horizon = 1440  # 24 hours
+        horizon = self._compute_horizon(raw_max_durs, chambers, raw_durs_entering, raw_durs_leaving)
+        
         # Assemble instance
-
         return OutputConfig(
             is_master=self.input_config.is_master,
             is_sophisticated=self.input_config.is_sophisticated,
@@ -250,10 +252,10 @@ class InstanceGenerator:
             locks=self._enum(locks_names),
             num_of_chambers=int(self.input_config.chambers_per_lock),
             max_num_of_lockings=max(1, self.input_config.ship_count + 5),
-            raw_lengths_of_chambers=raw_lengths_of_chambers,
-            raw_widths_of_chambers=raw_widths_of_chambers,
-            raw_times_for_filling=raw_times_for_filling,
-            raw_times_for_emptying=raw_times_for_emptying,
+            raw_lengths_of_chambers=chambers.lengths,
+            raw_widths_of_chambers=chambers.widths,
+            raw_times_for_filling=chambers.fill_times,
+            raw_times_for_emptying=chambers.empty_times,
             ships=self._enum(ships_names),
             directions=directions,
             raw_lengths_of_ships=ship_lengths_cm,
@@ -271,6 +273,3 @@ class InstanceGenerator:
             ship_width_cm_range=self.input_config.ship_width_cm_range,
             seed=self.input_config.seed,
         )
-    
-    def return_instance(self) -> dict[str, Any]:
-        return self.output_config.to_instance()

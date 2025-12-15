@@ -109,18 +109,18 @@ class OutputConfig:
     raw_max_horizon: int
     raw_buffer_time: int
     raw_security_distance: int
-    locations: list[str]
-    segments: list[str]
+    locations: list[dict[str, str]]
+    segments: list[dict[str, str]]
     raw_left_positions: list[int]
     raw_right_positions: list[int]
-    locks: list[str]
+    locks: list[dict[str, str]]
     num_of_chambers: int
     max_num_of_lockings: int
     raw_lengths_of_chambers: list[list[int]]
     raw_widths_of_chambers: list[list[int]]
     raw_times_for_filling: list[list[int]]
     raw_times_for_emptying: list[list[int]]
-    ships: list[str]
+    ships: list[dict[str, str]]
     directions: list[int]
     raw_lengths_of_ships: list[int]
     raw_widths_of_ships: list[int]
