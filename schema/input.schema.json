@@ -3,7 +3,7 @@
   "$id": "https://fokus.fraunhofer.de/input.schema.json",
   "title": "Serial Lock Scheduling JSON input data schema",
   "description": "This data structure contains the input schema for serial lock scheduling problems",
-  "$comment": "(c) Dr. Armin Wolf, Fraunhofer FOKUS, Berlin, Germany, 2025, all rights reserved",
+  "$comment": "(c) Dr. Armin Wolf, Fraunhofer FOKUS, Berlin, Germany, 2026, all rights reserved",
   "type": "object",
   "properties": {
     "isMaster": {
