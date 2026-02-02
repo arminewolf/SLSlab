@@ -1,0 +1,260 @@
+{
+    "isMaster": false,
+    "isSophisticated": true,
+    "isFCFS": false,
+    "isExtObj": false,
+    "isLaTeX": false,
+    "isJSON": true,
+    "rawMaxHorizon": 1440,
+    "rawBufferTime": 3,
+    "rawSecurityDistance": 200,
+    "locations": [
+        {
+            "e": "S"
+        },
+        {
+            "e": "T"
+        }
+    ],
+    "segments": [
+        {
+            "e": "SEG-1"
+        },
+        {
+            "e": "SEG-2"
+        },
+        {
+            "e": "SEG-3"
+        }
+    ],
+    "rawLeftPositions": [
+        0,
+        26916,
+        42452
+    ],
+    "rawRightPositions": [
+        26690,
+        42259,
+        55890
+    ],
+    "locks": [
+        {
+            "e": "LOCK-1"
+        },
+        {
+            "e": "LOCK-2"
+        }
+    ],
+    "numOfChambers": 3,
+    "maxNumOfLockings": 10,
+    "rawLengthsOfChambers": [
+        [
+            22606,
+            18425,
+            22595
+        ],
+        [
+            19341,
+            18717,
+            18572
+        ]
+    ],
+    "rawWidthsOfChambers": [
+        [
+            2340,
+            2163,
+            2341
+        ],
+        [
+            2001,
+            2899,
+            2006
+        ]
+    ],
+    "rawTimesForFilling": [
+        [
+            10,
+            9,
+            13
+        ],
+        [
+            11,
+            12,
+            10
+        ]
+    ],
+    "rawTimesForEmptying": [
+        [
+            14,
+            10,
+            9
+        ],
+        [
+            14,
+            11,
+            13
+        ]
+    ],
+    "ships": [
+        {
+            "e": "SHIP-1"
+        },
+        {
+            "e": "SHIP-2"
+        },
+        {
+            "e": "SHIP-3"
+        },
+        {
+            "e": "SHIP-4"
+        },
+        {
+            "e": "SHIP-5"
+        }
+    ],
+    "directions": [
+        1,
+        1,
+        1,
+        1,
+        -1
+    ],
+    "rawLengthsOfShips": [
+        7214,
+        8096,
+        7357,
+        10149,
+        8668
+    ],
+    "rawWidthsOfShips": [
+        1222,
+        1060,
+        989,
+        1338,
+        1499
+    ],
+    "rawDurationsForEntering": [
+        [
+            5,
+            5
+        ],
+        [
+            6,
+            6
+        ],
+        [
+            5,
+            5
+        ],
+        [
+            6,
+            6
+        ],
+        [
+            6,
+            5
+        ]
+    ],
+    "rawDurationsForLeaving": [
+        [
+            4,
+            4
+        ],
+        [
+            4,
+            5
+        ],
+        [
+            3,
+            3
+        ],
+        [
+            5,
+            5
+        ],
+        [
+            4,
+            4
+        ]
+    ],
+    "rawEtas": [
+        0,
+        10,
+        25,
+        36,
+        0
+    ],
+    "etaRange": [
+        10,
+        15
+    ],
+    "rawMinDurs": [
+        [
+            192,
+            98,
+            71
+        ],
+        [
+            150,
+            88,
+            69
+        ],
+        [
+            157,
+            95,
+            76
+        ],
+        [
+            142,
+            79,
+            85
+        ],
+        [
+            80,
+            50,
+            43
+        ]
+    ],
+    "rawMaxDurs": [
+        [
+            384,
+            196,
+            142
+        ],
+        [
+            300,
+            176,
+            138
+        ],
+        [
+            314,
+            190,
+            152
+        ],
+        [
+            284,
+            158,
+            170
+        ],
+        [
+            160,
+            100,
+            86
+        ]
+    ],
+    "maxDelayWeight": 1000,
+    "maxWaitingTimeWeight": 10,
+    "shipDistributionRange": [
+        70,
+        30
+    ],
+    "shipLengthCMRange": [
+        7000,
+        11000
+    ],
+    "shipWidthCMRange": [
+        950,
+        1700
+    ],
+    "seed": 123
+}

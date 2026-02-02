@@ -1,0 +1,296 @@
+{
+    "isMaster": false,
+    "isSophisticated": true,
+    "isFCFS": false,
+    "isExtObj": false,
+    "isLaTeX": false,
+    "isJSON": true,
+    "rawMaxHorizon": 1440,
+    "rawBufferTime": 3,
+    "rawSecurityDistance": 200,
+    "locations": [
+        {
+            "e": "S"
+        },
+        {
+            "e": "T"
+        }
+    ],
+    "segments": [
+        {
+            "e": "SEG-1"
+        },
+        {
+            "e": "SEG-2"
+        },
+        {
+            "e": "SEG-3"
+        },
+        {
+            "e": "SEG-4"
+        }
+    ],
+    "rawLeftPositions": [
+        0,
+        26916,
+        42485,
+        56110
+    ],
+    "rawRightPositions": [
+        26690,
+        42259,
+        55923,
+        71149
+    ],
+    "locks": [
+        {
+            "e": "LOCK-1"
+        },
+        {
+            "e": "LOCK-2"
+        },
+        {
+            "e": "LOCK-3"
+        }
+    ],
+    "numOfChambers": 2,
+    "maxNumOfLockings": 10,
+    "rawLengthsOfChambers": [
+        [
+            22606,
+            18425
+        ],
+        [
+            22595,
+            19341
+        ],
+        [
+            18717,
+            18572
+        ]
+    ],
+    "rawWidthsOfChambers": [
+        [
+            2340,
+            2163
+        ],
+        [
+            2341,
+            2001
+        ],
+        [
+            2899,
+            2006
+        ]
+    ],
+    "rawTimesForFilling": [
+        [
+            10,
+            9
+        ],
+        [
+            13,
+            11
+        ],
+        [
+            12,
+            10
+        ]
+    ],
+    "rawTimesForEmptying": [
+        [
+            14,
+            10
+        ],
+        [
+            9,
+            14
+        ],
+        [
+            11,
+            13
+        ]
+    ],
+    "ships": [
+        {
+            "e": "SHIP-1"
+        },
+        {
+            "e": "SHIP-2"
+        },
+        {
+            "e": "SHIP-3"
+        },
+        {
+            "e": "SHIP-4"
+        },
+        {
+            "e": "SHIP-5"
+        }
+    ],
+    "directions": [
+        1,
+        1,
+        -1,
+        -1,
+        -1
+    ],
+    "rawLengthsOfShips": [
+        3607,
+        4048,
+        3678,
+        5074,
+        4334
+    ],
+    "rawWidthsOfShips": [
+        543,
+        502,
+        484,
+        572,
+        612
+    ],
+    "rawDurationsForEntering": [
+        [
+            3,
+            3,
+            2
+        ],
+        [
+            4,
+            3,
+            3
+        ],
+        [
+            3,
+            3,
+            2
+        ],
+        [
+            3,
+            4,
+            4
+        ],
+        [
+            4,
+            4,
+            4
+        ]
+    ],
+    "rawDurationsForLeaving": [
+        [
+            3,
+            3,
+            3
+        ],
+        [
+            4,
+            4,
+            4
+        ],
+        [
+            3,
+            3,
+            2
+        ],
+        [
+            4,
+            3,
+            4
+        ],
+        [
+            3,
+            4,
+            3
+        ]
+    ],
+    "rawEtas": [
+        0,
+        15,
+        0,
+        11,
+        21
+    ],
+    "etaRange": [
+        10,
+        15
+    ],
+    "rawMinDurs": [
+        [
+            142,
+            79,
+            85,
+            76
+        ],
+        [
+            151,
+            83,
+            82,
+            99
+        ],
+        [
+            104,
+            55,
+            54,
+            59
+        ],
+        [
+            95,
+            49,
+            46,
+            47
+        ],
+        [
+            106,
+            52,
+            50,
+            46
+        ]
+    ],
+    "rawMaxDurs": [
+        [
+            284,
+            158,
+            170,
+            152
+        ],
+        [
+            302,
+            166,
+            164,
+            198
+        ],
+        [
+            208,
+            110,
+            108,
+            118
+        ],
+        [
+            190,
+            98,
+            92,
+            94
+        ],
+        [
+            212,
+            104,
+            100,
+            92
+        ]
+    ],
+    "maxDelayWeight": 1000,
+    "maxWaitingTimeWeight": 10,
+    "shipDistributionRange": [
+        50,
+        50
+    ],
+    "shipLengthCMRange": [
+        3500,
+        5500
+    ],
+    "shipWidthCMRange": [
+        475,
+        650
+    ],
+    "seed": 123
+}
